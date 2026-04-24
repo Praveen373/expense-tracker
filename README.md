@@ -1,5 +1,11 @@
 # Expense Tracker
 
+## Frontend URL (Vercel)
+https://expense-tracker-seven-alpha-31.vercel.app/
+
+## Backend URL (Render)
+https://expense-tracker-utff.onrender.com
+
 ## Screenshot
 
 ![Expense Tracker UI](docs/expense_tracker.png)
