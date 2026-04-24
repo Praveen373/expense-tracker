@@ -2,7 +2,7 @@
 
 ## Screenshot
 
-![Expense Tracker UI](docs/screenshot.png)
+![Expense Tracker UI](docs/expense_tracker.png)
 
 Full-stack personal expense tracker with a FastAPI backend and React frontend.
 
