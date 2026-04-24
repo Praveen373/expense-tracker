@@ -1,5 +1,116 @@
+import { useEffect, useState } from "react";
+
+const API_URL = "http://127.0.0.1:8000";
+
 function App() {
-  return <h1>Expense Tracker</h1>;
+  const [expenses, setExpenses] = useState([]);
+  const [form, setForm] = useState({
+    amount: "",
+    category: "",
+    description: "",
+    date: "",
+  });
+
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [sort, setSort] = useState("");
+
+  // Fetch expenses
+  const fetchExpenses = async () => {
+    let url = `${API_URL}/expenses?`;
+    if (categoryFilter) url += `category=${categoryFilter}&`;
+    if (sort) url += `sort=${sort}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+    setExpenses(data);
+  };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, [categoryFilter, sort]);
+
+  // Handle form input
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // Submit form
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    await fetch(`${API_URL}/expenses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...form,
+        amount: Number(form.amount),
+      }),
+    });
+
+    setForm({ amount: "", category: "", description: "", date: "" });
+    fetchExpenses();
+  };
+
+  // Calculate total
+  const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Expense Tracker</h1>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit}>
+        <input name="amount" placeholder="Amount" value={form.amount} onChange={handleChange} required />
+        <input name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
+        <input name="description" placeholder="Description" value={form.description} onChange={handleChange} required />
+        <input name="date" type="date" value={form.date} onChange={handleChange} required />
+        <button type="submit" disabled={!form.amount || !form.category || !form.date}>
+            Add Expense
+        </button>
+      </form>
+
+      <hr />
+
+      {/* Filters */}
+      <div>
+        <input
+          placeholder="Filter by category"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        />
+
+        <button onClick={() => setSort("date_desc")}>
+          Sort by Date (Newest)
+        </button>
+      </div>
+
+      <h3>Total: ₹{total}</h3>
+
+      {/* Expense List */}
+      <table border="1" cellPadding="8">
+        <thead>
+          <tr>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {expenses.map((e) => (
+            <tr key={e.id}>
+              <td>{e.amount}</td>
+              <td>{e.category}</td>
+              <td>{e.description}</td>
+              <td>{e.date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default App;

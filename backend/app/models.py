@@ -1,8 +1,9 @@
 import uuid
-from sqlalchemy import Column, String, Date, DateTime, Numeric, UniqueConstraint
 from datetime import datetime
 
+from sqlalchemy import Column, String, Date, DateTime, Numeric, UniqueConstraint, Index
 from .db import Base
+
 
 class Expense(Base):
     __tablename__ = "expenses"
@@ -19,4 +20,5 @@ class Expense(Base):
             "amount", "category", "description", "date",
             name="unique_expense_constraint"
         ),
+        Index("idx_category", "category"),
     )

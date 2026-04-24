@@ -29,17 +29,11 @@ def create_expense(expense: schemas.ExpenseCreate, db: Session = Depends(get_db)
 
     except IntegrityError:
         db.rollback()
-        existing = db.query(models.Expense).filter_by(
-            amount=expense.amount,
-            category=expense.category,
-            description=expense.description,
-            date=expense.date
-        ).first()
 
-        if existing:
-            return existing
-
-        raise HTTPException(status_code=500, detail="Error creating expense")
+        raise HTTPException(
+            status_code=409,
+            detail="Expense already exists"
+        )
 
 
 @router.get("/expenses", response_model=list[schemas.ExpenseResponse])
